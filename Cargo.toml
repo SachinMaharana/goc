@@ -1,0 +1,8 @@
+[package]
+name = "go-create"
+version = "0.1.0"
+authors = ["SachinMaharana <sachin.nicky@gmail.com>"]
+
+
+[profile.release]
+opt-level = 3
