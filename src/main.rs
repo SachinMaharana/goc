@@ -1,12 +1,14 @@
-#![allow(unused)]
+// #![allow(unused)]
+extern crate goc;
+
+use goc as Util;
+use goc::Config;
+use std::io::ErrorKind;
 
 use std::env;
-use std::fs;
-use std::fs::File;
-use std::io::prelude::*;
+use std::process;
 
-fn write_data(folder: &String) -> std::io::Result<()> {
-    let shader = b"
+const DATA: &[u8] = b"
 package main 
 
 func main() {
@@ -14,27 +16,30 @@ func main() {
 }
 ";
 
-    let path_req = format!("./{}/main.go", folder);
-    println!("{}", path_req);
-    let mut file = File::create(path_req)?;
-    file.write_all(shader)?;
-    Ok(())
-}
+const FILE_NAME: &str = "main.go";
 
 fn main() {
-    println!("Starting the Program..");
     let args: Vec<String> = env::args().collect();
 
-    if args.len() < 2 {
-        panic!("Not Enough Arguments. Please provide a folder name.");
-    }
-    let folder_name = &args[1];
-    let res = fs::create_dir(folder_name);
-    match res {
-        Ok(()) => println!("Folder {} Created.", folder_name),
-        Err(error) => {
-            println!("Error: {:?}  ", error);
+    let config = Config::new(&args).unwrap_or_else(|err| {
+        println!("Problem parsing arguments {}", err);
+        process::exit(1);
+    });
+
+    let folder_name = config.folder_name.clone();
+
+    if let Err(ref e) = Util::create_dir(&folder_name) {
+        if e.kind() == ErrorKind::AlreadyExists {
+            println!("Error in creating directory: {:?}", e.to_string());
+            process::exit(1);
         }
+        println!("Error in creating directory: {:?}", e.to_string());
+        process::exit(1);
     }
-    let response = write_data(folder_name);
+
+    if let Err(e) = Util::write_data(&folder_name, DATA, FILE_NAME) {
+        println!("Error in writing file: {:?}", e);
+        process::exit(1);
+    }
+    println!("Done!");
 }

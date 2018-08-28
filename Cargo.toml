@@ -1,5 +1,5 @@
 [package]
-name = "go-create"
+name = "goc"
 version = "0.1.0"
 authors = ["SachinMaharana <sachin.nicky@gmail.com>"]
 
