@@ -3,9 +3,9 @@ extern crate goc;
 
 use goc as Util;
 use goc::Config;
-use std::io::ErrorKind;
 
 use std::env;
+use std::io::ErrorKind;
 use std::process;
 
 const DATA: &[u8] = b"
